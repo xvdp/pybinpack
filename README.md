@@ -1,5 +1,6 @@
 pybinpack
 =========
+author @xvdp 2018
 
 * Rectangle Bin packer using pybind11
 * Required Python > 3.4, GCC
@@ -19,7 +20,20 @@ Modifications by xvdp 2018
     * multiprocessing
 
 Caveat:
-    This is an incomplete project, built with the purpose of understanding a. how pybind works, b. test speed of binning vs python version of binpacker.
+    This is an incomplete project, built with the purpose of understanding:
+
+        a. how pybind11 works. 
+
+        running verdict. pybind is much more user friendly than boost or swig. It exposes much python indide cpp and seems to deal relatively weel with cpp inside python.
+        It took me about one day to go thru most of the communication and setup, so it has an easy entry bar. 
+        Connections to Eigen, Boost and STL in cpp, and numpy in python make this a very useful framework.
+
+
+        b. Test speed of binning vs python version of binpacker.
+
+        - Preliminary results measured against all python version https://github.com/secnot/rectpack (on a 300 image dataset Hymenopter ). Both projects are sequential, cpp RectangleBinPack computes ~ 10e5 faster than py rectpack.
+
+
     Extending and completing it should be quite simple. 
 
 
@@ -27,12 +41,13 @@ Caveat:
     ```
     $ git clone https://gitlab.com/xkunglu/pybinpack --recursive
     ```
-Will install numpy and jupyter and download pybind11 if not found
+Required packages: numpy, jupyter, matplotlib and pybind. None of them have to be installed, this project will install and or build as required.
+
 
 2. build
     ```
     $ cd pybinpack
-    $ ./install.sh # this will run python setup.py install and run quick test
+    $ ./install.sh # this will run python setup.py install and run quick test. Since I only tested on a few setups, python 3.5-3.7 Ubuntu 16 and 18 on virgin conda envionments, build could fail.
     ```
  3. example
     ```

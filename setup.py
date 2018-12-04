@@ -64,12 +64,12 @@ class CMakeBuild(build_ext):
 
 setup(
     name='pybinpack',
-    version='0.0.1',
+    version='0.0.2',
     author='xk',
-    author_email='xkunglud@gmail.com',
-    description='rectanglee binpack with pybind11',
+    author_email='xvdpahlen@gmail.com',
+    description='rectangle binpack with pybind11',
     long_description='',
-    install_requires=['numpy', 'jupyter'],
+    install_requires=['numpy', 'jupyter', 'matplotlib', 'pillow'],
     ext_modules=[CMakeExtension('pybinpack')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,

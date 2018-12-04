@@ -1,11 +1,17 @@
-/** @file MaxRectsBinPack.h
+/*
+pybinpack
+xvdp 2018 
+
+changelist
+: moved usedRectangles to public
+: added index to Rect class
+
+base code from:
+* @file MaxRectsBinPack.h
 	@author Jukka Jyl�nki
 	@brief Implements different bin packer algorithms that use the MAXRECTS data structure.
 	This work is released to Public Domain, do whatever you want with it.
 
-	xvdp 2018 
-	moved usedRectangles to public
-	added index to Rect class
 */
 #pragma once
 

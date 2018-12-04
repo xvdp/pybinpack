@@ -1,5 +1,31 @@
 /*
-xvdp 2018
+pybinpack
+xvdp 2018 
+
+changelist
+: General accessor class Binnit
+
+Examples:
+    # python
+    >>> B = Binnit(0,0); # heuristic bin size; size has to be smaller than int32max
+        Arguments:
+            width, height: if width * height < 100 bin is automatically computed
+        
+        TODO: add arguments
+            Enum
+                GuillotineBinPack
+                ShelfBinPack
+                SkylineBinPack
+                ShelfNextFitBinPack
+            rotate: bool
+            binexpands: bool  - add funct.
+ 
+
+    >>> packed = B.pack(rectangle_list, [overflow=1.1]) 
+        # Arguments:
+            rectangle_list : 2d list or np array of [width, height]; eg. [[30,45],[45,23],[15,56],[34,34]] or np.array([[30,45],[45,23],[15,56],[34,34]])
+            overflow : default 1.1; 
+
 */
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -11,9 +37,10 @@ xvdp 2018
 using namespace std;
 namespace py = pybind11;
 
-std::vector<rbp::RectSize> get_rects(py::array_t<int> arr);
-std::vector<std::vector<int>> get_vec(py::array_t<int> arr);
-void simple_pack(py::array_t<int> arr, int binWidth=16384, int binHeight=8192);
+// deprecate
+// std::vector<rbp::RectSize> get_rects(py::array_t<int> arr);
+// std::vector<std::vector<int>> get_vec(py::array_t<int> arr);
+// void simple_pack(py::array_t<int> arr, int binWidth=16384, int binHeight=8192);
 
 
 class Binnit{
@@ -26,13 +53,13 @@ class Binnit{
 
         std::vector<rbp::MaxRectsBinPack> Bins;
 
-        void pre_process(py::array_t<int> arr);
+        void pre_process(py::array_t<int> arr, float overflow=1.1);
         // simple heuristic:
         // if bin_width * bin_height <= minimum_logical_bin: single bin estimated size
         // else estimate number of bins. 
-        void approximate_bin();
+        void approximate_bin(float overflow=1.1);
 
-        py::array_t<int> pack(py::array_t<int> arr);
+        py::array_t<int> pack(py::array_t<int> arr, float overflow=1.1);
 
 
     private:

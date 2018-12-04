@@ -1,7 +1,9 @@
 /*
 xvdp 2018
-add index to Rects - for exterior reference
+add index to Rects; to utilize the binning afterwards
 
+
+* @author Jukka Jyl�nki
 */
 
 #pragma once

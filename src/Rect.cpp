@@ -1,5 +1,10 @@
-#include "Rect.h"
+/*
+xvdp 2018
 
+from:
+	@author Jukka Jyl�nki
+*/
+#include "Rect.h"
 
 namespace rbp {
 

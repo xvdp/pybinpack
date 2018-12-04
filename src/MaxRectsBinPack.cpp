@@ -1,10 +1,15 @@
-/** @file MaxRectsBinPack.cpp
+/*
+pybinpack
+xvdp 2018 
+pybind11 bindings to RectangleBinPack
+changelist
+: move usedRectangles to public
+
+
+* @file MaxRectsBinPack.cpp
 	@author Jukka Jylänki
 	@brief Implements different bin packer algorithms that use the MAXRECTS data structure.
 	This work is released to Public Domain, do whatever you want with it.
-
-	xvdp 2018
-	move usedRectangles to public
 */
 #include <algorithm>
 #include <utility>
