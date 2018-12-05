@@ -61,6 +61,8 @@ class Binnit{
 
         py::array_t<int> pack(py::array_t<int> arr, float overflow=1.1);
 
+        //py::module sys = py::module::import("pybinpack_");
+
 
     private:
 

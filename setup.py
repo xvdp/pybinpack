@@ -62,14 +62,18 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
+def readversion():
+    with open('version.py') as _fi:
+        return _fi.read().split(' = ')[1]
+
 setup(
     name='pybinpack',
-    version='0.0.2',
+    version=readversion(),
     author='xk',
     author_email='xvdpahlen@gmail.com',
     description='rectangle binpack with pybind11',
     long_description='',
-    install_requires=['numpy', 'jupyter', 'matplotlib', 'pillow'],
+    install_requires=['numpy', 'jupyter', 'pillow'],
     ext_modules=[CMakeExtension('pybinpack')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
