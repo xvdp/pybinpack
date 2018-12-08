@@ -22,23 +22,21 @@ def check_version():
     print('--------------\n')
 
 def run_test():
-    print(" Test 1: b.pack(ar)")
-    ar=[[120,120],[134,162],[120,120],[134,162],[120,120],[134,162],[120,120],[134,162],[134,162],[120,120],[134,162],[5,5],[150,150],[5,5]]
 
+    ar = [[120,120],[134,162],[120,120],[134,162],[120,120],[134,162],[120,120],[134,162],[134,162],[120,120],[134,162],[5,5],[150,150],[5,5]]
     print('input: array of [[width, height]]', ar)
-    # pb.simple_pack(ar, 500, 500)
 
+    print(" Test 1: ")
     b = pb.Binnit(0,0)
-    out = b.pack(ar)
+    out = b.Pack(ar, method=0, heuristic=0, verbose=True)
     print("output: array of [Bin, index, x, y, width, height ]:\n", out)
     print()
 
-    print(" Test 2: b.pack(ar, method=0, heuristic=0)")
+    print(" Test 2: ")
     b = pb.Binnit(0,0)
-    out = b.Pack(ar,  method=0, heuristic=0)
+    out = b.Pack(ar, method=1, heuristic=0, verbose=True)
     print(out)
 
 if __name__ == "__main__":
     check_version()
     run_test()
-    

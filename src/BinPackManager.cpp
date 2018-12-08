@@ -76,7 +76,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
     get_rectangles(arr);
     approximate_bin_size(overflow);
 
-    m_numrect = 0;
+   //m_numrect = 0;
     std::string heuristic_name;
 
     std::vector<std::vector<int>> misfits;
@@ -252,82 +252,82 @@ py::array_t<int> Binnit::pyout(bool verbose){
 /////
 // TODO Deprectate Binnit::Pack handles this and more
 ///
-py::array_t<int> Binnit::pack(py::array_t<int> arr, float overflow)
-{
-    //std::vector<rbp::MaxRectsBinPack> Bins;
-    // TODO array of bins
-    // TODO different bin packing types
+// py::array_t<int> Binnit::pack(py::array_t<int> arr, float overflow)
+// {
+//     //std::vector<rbp::MaxRectsBinPack> Bins;
+//     // TODO array of bins
+//     // TODO different bin packing types
 
-    Bins.clear();
+//     Bins.clear();
 
-    get_rectangles(arr);
-    approximate_bin_size(overflow);
+//     get_rectangles(arr);
+//     approximate_bin_size(overflow);
 
-    rbp::MaxRectsBinPack bin;
+//     rbp::MaxRectsBinPack bin;
 
-	py::print("Initializing bin to ", m_bin_width, m_bin_height);
-	bin.Init(m_bin_width, m_bin_height);
+// 	py::print("Initializing bin to ", m_bin_width, m_bin_height);
+// 	bin.Init(m_bin_width, m_bin_height);
 
-    m_numrect = 0;
+//     m_numrect = 0;
 
-    for (int i = 0; i < m_rects.size(); i++){
-		rbp::MaxRectsBinPack::FreeRectChoiceHeuristic heuristic = rbp::MaxRectsBinPack::FreeRectChoiceHeuristic(0);
-        rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, heuristic, i);
+//     for (int i = 0; i < m_rects.size(); i++){
+// 		rbp::MaxRectsBinPack::FreeRectChoiceHeuristic heuristic = rbp::MaxRectsBinPack::FreeRectChoiceHeuristic(0);
+//         rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, heuristic, i);
 
-        // std::string heuristic_name = bin.enum_name[int(heuristic)];
-        // py::print(int(heuristic), heuristic_name);
+//         // std::string heuristic_name = bin.enum_name[int(heuristic)];
+//         // py::print(int(heuristic), heuristic_name);
 
-        /* Test success or failure. TODO: 
-            if failure 
-                if fixed size bin: 
-                    initialize new bin, record dims of rect that didnt fit,
-                else
-                    enarge bin
-        */
-		if (packedRect.height <= 0)
-            py::print(" No room for rectangle [", i, "] of size [", m_rects[i].width, ",", m_rects[i].height, "]"); 
-            //bin.Resize(width, height +x)
-        else
-            m_numrect += 1;
-	}
+//         /* Test success or failure. TODO: 
+//             if failure 
+//                 if fixed size bin: 
+//                     initialize new bin, record dims of rect that didnt fit,
+//                 else
+//                     enarge bin
+//         */
+// 		if (packedRect.height <= 0)
+//             py::print(" No room for rectangle [", i, "] of size [", m_rects[i].width, ",", m_rects[i].height, "]"); 
+//             //bin.Resize(width, height +x)
+//         else
+//             m_numrect += 1;
+// 	}
 
-    Bins.push_back(bin);
-    return pyout();
+//     Bins.push_back(bin);
+//     return pyout();
 
-}
+// }
 
 ////
 // TODO either deprecate or make use of this
 //
 
-void Binnit::SetMethod(int method){
-    assert(5 > method > -1);
-    Binnit::SetMethod(Binnit::Method(method));
-}
+// void Binnit::SetMethod(int method){
+//     assert(5 > method > -1);
+//     Binnit::SetMethod(Binnit::Method(method));
+// }
 
-void Binnit::SetMethod(enum Binnit::Method method){//}, int heuristic){
-    py::print(method, int(method));
-}
-void Binnit::SetMethod(const string& method){//, int heuristic){
+// void Binnit::SetMethod(enum Binnit::Method method){//}, int heuristic){
+//     py::print(method, int(method));
+// }
+// void Binnit::SetMethod(const string& method){//, int heuristic){
 
-    vector<string> structures = {"MaxRects", "Guilliotine", "Shelf", "ShelfNextFit", "Skyline"};
-    vector<string> stru = {"max", "gui", "she", "nex", "sky"};
-    const string method_l = boost::algorithm::to_lower_copy(method);
-    int chosen = -1;
+//     vector<string> structures = {"MaxRects", "Guilliotine", "Shelf", "ShelfNextFit", "Skyline"};
+//     vector<string> stru = {"max", "gui", "she", "nex", "sky"};
+//     const string method_l = boost::algorithm::to_lower_copy(method);
+//     int chosen = -1;
 
-    for (int i = 0; i <stru.size(); i++){
-        if (method_l.find(stru[i]) != string::npos){
-            chosen = i;
-            break;
-        }
-    }
-    if (chosen >= 0){
-        py::print(chosen);
-        Binnit::SetMethod(chosen);
-    }
-    else{
-        py::print("arg 'method' has to be either one of ", structures, "(",0,"-", structures.size()-1, ")");
-    }
-}
+//     for (int i = 0; i <stru.size(); i++){
+//         if (method_l.find(stru[i]) != string::npos){
+//             chosen = i;
+//             break;
+//         }
+//     }
+//     if (chosen >= 0){
+//         py::print(chosen);
+//         Binnit::SetMethod(chosen);
+//     }
+//     else{
+//         py::print("arg 'method' has to be either one of ", structures, "(",0,"-", structures.size()-1, ")");
+//     }
+// }
 
 

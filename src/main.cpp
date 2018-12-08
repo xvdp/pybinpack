@@ -6,12 +6,9 @@ pybind11 bindings to RectangleBinPack
 */
 #include <stdio.h>
 #include <pybind11/pybind11.h>
-
 #include "BinPackManager.h"
 
 namespace py = pybind11;
-
-
 
 PYBIND11_MODULE(pybinpack, m){
     m.doc() = R"pbdoc(
@@ -31,13 +28,13 @@ PYBIND11_MODULE(pybinpack, m){
     py::class_<Binnit>binnit(m, "Binnit");
 
     binnit.def(py::init<const int &, const int &>(),  py::arg("width")=0,  py::arg("height")=0 )
+        .def("Pack", &Binnit::Pack, "Bin Packing", py::arg("arr"), py::arg("method")=0, py::arg("overflow")=1.1,
+             py::arg("heuristic")=0, py::arg("split_method")=0, py::arg("verbose")=false );
+    /*
         .def("SetMethod", py::overload_cast<enum Binnit::Method> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
         .def("SetMethod", py::overload_cast<int> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
         .def("SetMethod", py::overload_cast<const string&> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
         .def("pack", &Binnit::pack, "executes bin packing", py::arg("arr"), py::arg("overflow")=1.1 )
-
-        .def("Pack", &Binnit::Pack, "Bin Packing", py::arg("arr"), py::arg("method")=0, py::arg("overflow")=1.1,
-        py::arg("heuristic")=0, py::arg("split_method")=0, py::arg("verbose")=false );
 
 
     py::enum_<Binnit::Method>(binnit, "Method")
@@ -46,10 +43,8 @@ PYBIND11_MODULE(pybinpack, m){
         .value("Shelf", Binnit::Method::Shelf)
         .value("ShelfNextFit", Binnit::Method::ShelfNextFit)
         .value("Skyline", Binnit::Method::Skyline);
+        */
         
-
-    
-  
 
 #ifdef VERSION_INFO
     m.attr("__version__") = VERSION_INFO;

@@ -66,10 +66,11 @@ def readversion():
     with open('version.py') as _fi:
         return _fi.read().split(' = ')[1]
 
+
 setup(
     name='pybinpack',
     version=readversion(),
-    author='xk',
+    author='xvdp',
     author_email='xvdpahlen@gmail.com',
     description='rectangle binpack with pybind11',
     long_description='',
