@@ -3,10 +3,11 @@ pybinpack
 xvdp 2018 
 
 changelist
-: moved usedRectangles to public
-: added index to Rect class
+: created parent class 'BinPack' to hold public 'usedRectangles'
+: enum name array for reporting
+: added index for reference
 
-base code from:
+adapted from:
 * @file MaxRectsBinPack.h
 	@author Jukka Jyl�nki
 	@brief Implements different bin packer algorithms that use the MAXRECTS data structure.
@@ -23,7 +24,7 @@ namespace rbp {
 
 /** MaxRectsBinPack implements the MAXRECTS data structure and different bin packing algorithms that 
 	use this structure. */
-class MaxRectsBinPack
+class MaxRectsBinPack : public BinPack
 {
 	public:
 		/// Instantiates a bin of size (0,0). Call Init to create a new bin.
@@ -40,12 +41,13 @@ class MaxRectsBinPack
 		/// Specifies the different heuristic rules that can be used when deciding where to place a new rectangle.
 		enum FreeRectChoiceHeuristic
 		{
-			RectBestShortSideFit, ///< -BSSF: Positions the rectangle against the short side of a free rectangle into which it fits the best.
-			RectBestLongSideFit, ///< -BLSF: Positions the rectangle against the long side of a free rectangle into which it fits the best.
-			RectBestAreaFit, ///< -BAF: Positions the rectangle into the smallest free rect into which it fits.
-			RectBottomLeftRule, ///< -BL: Does the Tetris placement.
-			RectContactPointRule ///< -CP: Choosest the placement where the rectangle touches other rects as much as possible.
+			RectBestShortSideFit = 0, ///< -BSSF: Positions the rectangle against the short side of a free rectangle into which it fits the best.
+			RectBestLongSideFit = 1, ///< -BLSF: Positions the rectangle against the long side of a free rectangle into which it fits the best.
+			RectBestAreaFit = 2, ///< -BAF: Positions the rectangle into the smallest free rect into which it fits.
+			RectBottomLeftRule = 3, ///< -BL: Does the Tetris placement.
+			RectContactPointRule = 4 ///< -CP: Choosest the placement where the rectangle touches other rects as much as possible.
 		};
+		const std::vector<std::string> enum_name = {"RectBestShortSideFit", "RectBestLongSideFit", "RectBestAreaFit", "RectBottomLeftRule", "RectContactPointRule" };
 
 		/// Inserts the given list of rectangles in an offline/batch mode, possibly rotated.
 		/// @param rects The list of rectangles to insert. This vector will be destroyed in the process.
@@ -62,7 +64,7 @@ class MaxRectsBinPack
 		float Occupancy() const;
 
 		// xvdp: moved to public to make avaliable to other functions
-		std::vector<Rect> usedRectangles;
+		//std::vector<Rect> usedRectangles;
 
 	private:
 		int binWidth;
@@ -70,7 +72,6 @@ class MaxRectsBinPack
 
 		bool binAllowFlip;
 
-		
 		std::vector<Rect> freeRectangles;
 
 		/// Computes the placement score for placing the given rectangle with the given method.

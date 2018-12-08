@@ -1,7 +1,8 @@
 /*
 xvdp 2018
 add index to Rects; to utilize the binning afterwards
-
+add flipped: for MaxRectBinPack and ShelfNextBinPack
+add BinPack parent class to hold results
 
 * @author Jukka Jyl�nki
 */
@@ -35,10 +36,18 @@ namespace rbp {
         int y;
         int width;
         int height;
-        int index;  
+        int index;
+
+		bool flipped;
+		Rect(): x(0), y(0), width(0), height(1), index(1), flipped(false){ }
     };
 
 
+	class BinPack{
+		public:
+			std::vector<Rect> usedRectangles;
+
+	};
 
 /// Performs a lexicographic compare on (rect short side, rect long side).
 /// @return -1 if the smaller side of a is shorter than the smaller side of b, 1 if the other way around.

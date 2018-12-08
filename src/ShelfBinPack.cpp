@@ -1,5 +1,5 @@
 /** @file ShelfBinPack.cpp
-	@author Jukka Jylänki
+	@author Jukka Jylï¿½nki
 
 	@brief Implements different bin packer algorithms that use the SHELF data structure.
 
@@ -120,7 +120,8 @@ void ShelfBinPack::AddToShelf(Shelf &shelf, int width, int height, Rect &newNode
 	usedSurfaceArea += width * height;
 }
 
-Rect ShelfBinPack::Insert(int width, int height, ShelfChoiceHeuristic method)
+
+Rect ShelfBinPack::Insert(int width, int height, ShelfChoiceHeuristic method, const int &index)
 {
 	Rect newNode;
 
@@ -128,7 +129,7 @@ Rect ShelfBinPack::Insert(int width, int height, ShelfChoiceHeuristic method)
 	if (useWasteMap)
 	{
 		newNode = wasteMap.Insert(width, height, true, GuillotineBinPack::RectBestShortSideFit, 
-			GuillotineBinPack::SplitMaximizeArea);
+			GuillotineBinPack::SplitMaximizeArea, index);
 		if (newNode.height != 0)
 		{
 			// Track the space we just used.

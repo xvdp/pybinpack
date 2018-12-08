@@ -5,27 +5,9 @@ xvdp 2018
 changelist
 : General accessor class Binnit
 
-Examples:
-    # python
-    >>> B = Binnit(0,0); # heuristic bin size; size has to be smaller than int32max
-        Arguments:
-            width, height: if width * height < 100 bin is automatically computed
-        
-        TODO: add arguments
-            Enum
-                GuillotineBinPack
-                ShelfBinPack
-                SkylineBinPack
-                ShelfNextFitBinPack
-            rotate: bool
-            binexpands: bool  - add funct.
- 
-
-    >>> packed = B.pack(rectangle_list, [overflow=1.1]) 
-        # Arguments:
-            rectangle_list : 2d list or np array of [width, height]; eg. [[30,45],[45,23],[15,56],[34,34]] or np.array([[30,45],[45,23],[15,56],[34,34]])
-            overflow : default 1.1; 
-
+TODO: 
+    multiple bins
+    fix method, 2,3,4 = return empty arrays
 */
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -33,39 +15,52 @@ Examples:
 
 #include "Rect.h"
 #include "MaxRectsBinPack.h"
+#include "GuillotineBinPack.h"
+#include "ShelfBinPack.h"
+#include "ShelfNextFitBinPack.h"
+#include "SkylineBinPack.h"
 
 using namespace std;
 namespace py = pybind11;
-
-// deprecate
-// std::vector<rbp::RectSize> get_rects(py::array_t<int> arr);
-// std::vector<std::vector<int>> get_vec(py::array_t<int> arr);
-// void simple_pack(py::array_t<int> arr, int binWidth=16384, int binHeight=8192);
 
 
 class Binnit{
 
     public:
 
-        Binnit(int width, int height);
+        Binnit(int width=0, int height=0);
         // read input list pack in vector
         // compute area per rectangle and total area
 
-        std::vector<rbp::MaxRectsBinPack> Bins;
+        enum Method{
+            MaxRects = 0,
+            Guillotine = 1,
+            Shelf = 2,
+            ShelfNextFit = 3,
+            Skyline = 4
+            };
 
-        void pre_process(py::array_t<int> arr, float overflow=1.1);
+
+        void SetMethod(enum Method method);//, int heuristic=0);        
+        void SetMethod(int method);//, int heuristic=0);        
+        void SetMethod(const string& method);//, int heuristic=0);        
+
+
+        std::vector<rbp::BinPack> Bins;
+
+        // gets list or numpy array and writes is as m_rects
+        void get_rectangles(py::array_t<int> arr);
+
         // simple heuristic:
         // if bin_width * bin_height <= minimum_logical_bin: single bin estimated size
         // else estimate number of bins. 
-        void approximate_bin(float overflow=1.1);
+        void approximate_bin_size(float overflow=1.1);
 
         py::array_t<int> pack(py::array_t<int> arr, float overflow=1.1);
 
-        //py::module sys = py::module::import("pybinpack_");
-
+        py::array_t<int> Pack(py::array_t<int> arr, int method=0, float overflow=1.1, int heuristic=0, int split_method=0, bool verbose=false);
 
     private:
-
 
         std::vector<rbp::RectSize> m_rects;
         std::vector<int> m_areas;
@@ -83,7 +78,6 @@ class Binnit{
 
         int m_numrect = 0;
 
-        py::array_t<int> pyout();
-
+        py::array_t<int> pyout(bool verbose=false);
 
 };

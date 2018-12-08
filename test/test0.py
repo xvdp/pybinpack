@@ -22,14 +22,20 @@ def check_version():
     print('--------------\n')
 
 def run_test():
-    #ar = np.array([[1,2],[3,4],[20,120],[30,40],[20,120],[30,40],[20,120]])
+    print(" Test 1: b.pack(ar)")
     ar=[[120,120],[134,162],[120,120],[134,162],[120,120],[134,162],[120,120],[134,162],[134,162],[120,120],[134,162],[5,5],[150,150],[5,5]]
 
-    print('numpy array', ar)
+    print('input: array of [[width, height]]', ar)
     # pb.simple_pack(ar, 500, 500)
 
     b = pb.Binnit(0,0)
     out = b.pack(ar)
+    print("output: array of [Bin, index, x, y, width, height ]:\n", out)
+    print()
+
+    print(" Test 2: b.pack(ar, method=0, heuristic=0)")
+    b = pb.Binnit(0,0)
+    out = b.Pack(ar,  method=0, heuristic=0)
     print(out)
 
 if __name__ == "__main__":

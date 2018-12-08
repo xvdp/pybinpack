@@ -337,11 +337,11 @@ void GuillotineBinPack::InsertMaxFitting(std::vector<RectSize> &rects, std::vect
 */
 
 Rect GuillotineBinPack::Insert(int width, int height, bool merge, FreeRectChoiceHeuristic rectChoice, 
-	GuillotineSplitHeuristic splitMethod)
+	GuillotineSplitHeuristic splitMethod, const int&  index)
 {
 	// Find where to put the new rectangle.
 	int freeNodeIndex = 0;
-	Rect newRect = FindPositionForNewNode(width, height, rectChoice, &freeNodeIndex);
+	Rect newRect = FindPositionForNewNode(width, height, rectChoice, &freeNodeIndex, index);
 
 	// Abort if we didn't have enough space in the bin.
 	if (newRect.height == 0)
@@ -427,7 +427,7 @@ int GuillotineBinPack::ScoreWorstLongSideFit(int width, int height, const Rect &
 	return -ScoreBestLongSideFit(width, height, freeRect);
 }
 
-Rect GuillotineBinPack::FindPositionForNewNode(int width, int height, FreeRectChoiceHeuristic rectChoice, int *nodeIndex)
+Rect GuillotineBinPack::FindPositionForNewNode(int width, int height, FreeRectChoiceHeuristic rectChoice, int *nodeIndex, const int &index)
 {
 	Rect bestNode;
 	memset(&bestNode, 0, sizeof(Rect));
@@ -494,6 +494,7 @@ Rect GuillotineBinPack::FindPositionForNewNode(int width, int height, FreeRectCh
 			}
 		}
 	}
+	bestNode.index = index;
 	return bestNode;
 }
 

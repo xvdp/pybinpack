@@ -1,5 +1,5 @@
 /** @file SkylineBinPack.cpp
-	@author Jukka Jylänki
+	@author Jukka Jylï¿½nki
 
 	@brief Implements different bin packer algorithms that use the SKYLINE data structure.
 
@@ -113,11 +113,11 @@ void SkylineBinPack::Insert(std::vector<RectSize> &rects, std::vector<Rect> &dst
 	}
 }
 
-Rect SkylineBinPack::Insert(int width, int height, LevelChoiceHeuristic method)
+Rect SkylineBinPack::Insert(int width, int height, LevelChoiceHeuristic method, const int &index)
 {
 	// First try to pack this rectangle into the waste map, if it fits.
 	Rect node = wasteMap.Insert(width, height, true, GuillotineBinPack::RectBestShortSideFit, 
-		GuillotineBinPack::SplitMaximizeArea);
+		GuillotineBinPack::SplitMaximizeArea, index);
 	debug_assert(disjointRects.Disjoint(node));
 
 	if (node.height != 0)
@@ -127,6 +127,7 @@ Rect SkylineBinPack::Insert(int width, int height, LevelChoiceHeuristic method)
 		newNode.y = node.y;
 		newNode.width = node.width;
 		newNode.height = node.height;
+		newNode.index = node.index;
 		usedSurfaceArea += width * height;
 #ifdef _DEBUG
 		assert(disjointRects.Disjoint(newNode));

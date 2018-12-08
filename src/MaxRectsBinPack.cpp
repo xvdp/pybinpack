@@ -216,6 +216,8 @@ Rect MaxRectsBinPack::FindPositionForNewNodeBottomLeft(int width, int height, in
 				bestNode.height = width;
 				bestY = topSideY;
 				bestX = freeRectangles[i].x;
+
+				bestNode.flipped = !bestNode.flipped;
 			}
 		}
 	}
@@ -267,6 +269,8 @@ Rect MaxRectsBinPack::FindPositionForNewNodeBestShortSideFit(int width, int heig
 				bestNode.height = width;
 				bestShortSideFit = flippedShortSideFit;
 				bestLongSideFit = flippedLongSideFit;
+
+				bestNode.flipped = !bestNode.flipped;
 			}
 		}
 	}
@@ -318,6 +322,8 @@ Rect MaxRectsBinPack::FindPositionForNewNodeBestLongSideFit(int width, int heigh
 				bestNode.height = width;
 				bestShortSideFit = shortSideFit;
 				bestLongSideFit = longSideFit;
+
+				bestNode.flipped = !bestNode.flipped;
 			}
 		}
 	}
@@ -369,6 +375,8 @@ Rect MaxRectsBinPack::FindPositionForNewNodeBestAreaFit(int width, int height,
 				bestNode.height = width;
 				bestShortSideFit = shortSideFit;
 				bestAreaFit = areaFit;
+
+				bestNode.flipped = !bestNode.flipped;
 			}
 		}
 	}
@@ -434,6 +442,8 @@ Rect MaxRectsBinPack::FindPositionForNewNodeContactPoint(int width, int height, 
 				bestNode.width = height;
 				bestNode.height = width;
 				bestContactScore = score;
+
+				bestNode.flipped = !bestNode.flipped;
 			}
 		}
 	}

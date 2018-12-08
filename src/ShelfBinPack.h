@@ -1,5 +1,15 @@
-/** @file ShelfBinPack.h
-	@author Jukka Jylänki
+/*
+pybinpack
+xvdp 2018 
+
+changelist
+: created parent class 'BinPack' to hold public 'usedRectangles'
+: enum name array for reporting
+: added index for reference
+
+adapted from:
+* @file ShelfBinPack.h
+	@author Jukka Jylï¿½nki
 
 	@brief Implements different bin packer algorithms that use the SHELF data structure.
 
@@ -16,7 +26,7 @@ namespace rbp {
 
 /** ShelfBinPack implements different bin packing algorithms that use the SHELF data structure. ShelfBinPack
 also uses GuillotineBinPack for the waste map if it is enabled. */
-class ShelfBinPack
+class ShelfBinPack : public BinPack
 {
 public:
 	/// Default ctor initializes a bin of size (0,0). Call Init() to init an instance.
@@ -38,11 +48,12 @@ public:
 		ShelfBestWidthFit, ///< -BWF: Choose the shelf that has the least remaining horizontal shelf space available after packing.
 		ShelfWorstWidthFit, ///< -WWF: Choose the shelf that will have most remainining horizontal shelf space available after packing.
 	};
+	const std::vector<std::string> enum_name = {"ShelfNextFit", "ShelfFirstFit", "ShelfBestAreaFit", "ShelfWorstAreaFit", "ShelfBestHeightFit", "ShelfBestWidthFit", "ShelfWorstWidthFit"};
 
 	/// Inserts a single rectangle into the bin. The packer might rotate the rectangle, in which case the returned
 	/// struct will have the width and height values swapped.
 	/// @param method The heuristic rule to use for choosing a shelf if multiple ones are possible.
-	Rect Insert(int width, int height, ShelfChoiceHeuristic method);
+	Rect Insert(int width, int height, ShelfChoiceHeuristic method, const int &index);
 
 	/// Computes the ratio of used surface area to the total bin area.
 	float Occupancy() const;

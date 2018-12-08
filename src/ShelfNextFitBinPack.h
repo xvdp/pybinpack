@@ -1,5 +1,17 @@
-/** @file ShelfNextFitBinPack.h
-	@author Jukka Jylänki
+/*
+pybinpack
+xvdp 2018 
+
+changelist
+: created parent class 'BinPack' to hold public 'usedRectangles'
+: enum name array for reporting
+: added index for reference
+: merged node with rect
+
+
+adapted from:
+* @file ShelfNextFitBinPack.h
+	@author Jukka Jylï¿½nki
 
 	@brief Implements the naive Shelf Next Fit bin packer algorithm.
 
@@ -12,38 +24,40 @@
 #pragma once
 
 #include <vector>
+#include "Rect.h"
 
 namespace rbp {
 
-class ShelfNextFitBinPack
-{
-public:
-	struct Node
+	class ShelfNextFitBinPack  : public BinPack
 	{
-		int x;
-		int y;
-		int width;
-		int height;
+		public:
+			// struct Node
+			// {
+			// 	int x;
+			// 	int y;
+			// 	int width;
+			// 	int height;
+			// 	int index;
 
-		bool flipped;
+			// 	bool flipped;
+			// };
+
+			void Init(int width, int height);
+
+			Rect Insert(int width, int height, const int &index=0);
+
+			/// Computes the ratio of used surface area.
+			float Occupancy() const;
+
+		private:
+			int binWidth;
+			int binHeight;
+
+			int currentX;
+			int currentY;
+			int shelfHeight;
+
+			unsigned long usedSurfaceArea;
 	};
-
-	void Init(int width, int height);
-
-	Node Insert(int width, int height);
-
-	/// Computes the ratio of used surface area.
-	float Occupancy() const;
-
-private:
-	int binWidth;
-	int binHeight;
-
-	int currentX;
-	int currentY;
-	int shelfHeight;
-
-	unsigned long usedSurfaceArea;
-};
 
 }
