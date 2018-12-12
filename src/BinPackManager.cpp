@@ -279,6 +279,11 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
 /////
 // 
 // return Binned data as flat numpy array
+//  [0]   : bin index
+//  [1]   : input rectangle index
+//  [2]   : is rotated 0/1 # Errata: does not return correct value
+//  [3,4] : position
+//  [5,6] : area
 //
 py::array_t<int> Binnit::pyout(){
 
@@ -291,13 +296,14 @@ py::array_t<int> Binnit::pyout(){
         py::print("Number of Rectangles:\t", _num_rects);
     }
 
-    py::array_t<int> binned(_num_rects*6);
+    py::array_t<int> binned(_num_rects * 7);
     int k = 0;
     for (int i = 0; i < Bins.size(); i++)
     {
         for (int j = 0; j < Bins[i].usedRectangles.size(); j++){
-            binned.mutable_at(k++) = i; 
-            binned.mutable_at(k++) = Bins[i].usedRectangles[j].index; 
+            binned.mutable_at(k++) = i;
+            binned.mutable_at(k++) = Bins[i].usedRectangles[j].index;
+            binned.mutable_at(k++) = int(Bins[i].usedRectangles[j].flipped);
             binned.mutable_at(k++) =  Bins[i].usedRectangles[j].x;
             binned.mutable_at(k++) =  Bins[i].usedRectangles[j].y;
             binned.mutable_at(k++) =  Bins[i].usedRectangles[j].width;
