@@ -30,11 +30,15 @@ def run_test():
     b = pb.Binnit(0,0)
     out = b.Pack(ar, method=0, heuristic=0, verbose=True)
     print("output: array of [Bin, index, x, y, width, height ]:\n", out)
-    print()
 
-    print(" Test 2: ")
+    print("\n Test 2: ")
     b = pb.Binnit(0,0)
     out = b.Pack(ar, method=1, heuristic=0, verbose=True)
+    print(out)
+
+    print("\n Test 3: ")
+    b = pb.Binnit(500, 500)
+    out = b.Pack(ar, method=0, heuristic=0, verbose=True)
     print(out)
 
 if __name__ == "__main__":

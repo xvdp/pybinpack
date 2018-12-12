@@ -42,12 +42,18 @@ namespace rbp {
 		Rect(): x(0), y(0), width(0), height(1), index(1), flipped(false){ }
     };
 
-
+	/// Parent Class to all algorithms / patch to handle common data
+	/// Algorithm differentiation ought to be done with templates, but that would require rewrite of everyghn
 	class BinPack{
 		public:
+			// for export
 			std::vector<Rect> usedRectangles;
+			// when filling multiple bins encode size of smallest rectangle that could not be handled
+			int max_width;
+			int max_height;
 
 	};
+
 
 /// Performs a lexicographic compare on (rect short side, rect long side).
 /// @return -1 if the smaller side of a is shorter than the smaller side of b, 1 if the other way around.

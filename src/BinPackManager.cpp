@@ -4,6 +4,7 @@ xvdp 2018
 */
 #include <cassert> 
 #include <string>
+#include <vector>
 #include <math.h>
 #include <boost/algorithm/string.hpp>    
 #include "BinPackManager.h"
@@ -14,16 +15,12 @@ Binnit::Binnit (int width, int height) {
     m_bin_width = width;
     m_bin_height = height;
 }
-
+/////
+// 
+// input 2d list or 2d numpy array 
+//
 void Binnit::get_rectangles(py::array_t<int> arr)
 {
-    /*  input 2d list or 2d array:
-            build rectsize vector
-            get total area
-            approximate binsize needed
-
-        collect 2d 2chanel ndarray or list and build vector
-    */
     py::buffer_info buf1 = arr.request();
     int numel = buf1.size;
     auto shape = buf1.shape;
@@ -31,7 +28,8 @@ void Binnit::get_rectangles(py::array_t<int> arr)
     assert(int(shape.size()) == int(2));// expects a 2d array with of 2 channels, e.g [[1,2],[3,4],[5,6]]
     assert(int(shape[1]) == int(2));    // expects a 2d array with of 2 channels, e.g [[1,2],[3,4],[5,6]]
 
-    py::print("array has " ,shape[0], " elements, of ",shape[1], "dimensions");
+    if (m_verbose)
+        py::print("::get_rectangles()\nArray has ", shape[0], " elements, of ", shape[1], "dimensions");
 
     m_rects.clear();
     m_areas.clear();
@@ -50,20 +48,105 @@ void Binnit::get_rectangles(py::array_t<int> arr)
         m_area += area;
     }
 }
+/////
+// 
+// estimate bin needed if area smaller than 100x100. : (int) (sqrt(sumarea) * overflow)
+//
+void Binnit::approximate_bin_size(float overflow)
+{
+    if (m_verbose)
+        py::print("::approximate_bin_size()\nInput bin width: ", m_bin_width, "\nInput bin height ", m_bin_height);
 
-void Binnit::approximate_bin_size(float overflow){
-    /*if bin size is automatic assume single bin*/
-
-    if (m_bin_height * m_bin_height < m_minimum_logical_bin){
-
+    if (m_bin_height * m_bin_width < m_minimum_logical_bin){
         int approx_size = int(sqrt(double(m_area)) * overflow);
         m_bin_height = approx_size;
         m_bin_width = approx_size;
+        m_fixedbin = false;
+    }
 
-        bool m_fixedbin = false;
+    if (m_fixedbin)
+        py::print("\tUse input dimensions: ", m_fixedbin);
+    else
+        py::print("\tOutput bin height ", m_bin_height, "\n\tOutput bin width ", m_bin_height);
+}
+
+bool Binnit::check_enum(const vector<string> &e, const int &i)
+{
+    if ( e.size() < i < 0)
+        return true;
+
+    py::print("heuristic allowable range: 0-", e.size()-1, ":", e);
+    return false;
+}
+
+/////
+// fill_bin fills bins and creates as many new bins as necessary
+// implemented only for MaxRectsBinPack: TODO Template everything
+//
+void Binnit::fill_bin(rbp::MaxRectsBinPack& bin, int heuristic, bool allow_flip)
+{
+    m_bins = 0;
+    assert(check_enum(rbp::MaxRectsBinPack::enum_name, heuristic));
+
+    while (m_rects.size()){
+
+        // vector.push_back copies data
+        if (m_bins){
+            Bins.push_back(bin);
+            if (!m_fixedbin) { // single bin, log rects that dont fit and exit
+                for (int i = 0; i < m_rects.size(); i++)
+                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
+                return; 
+            }
+        }
+        // > MaxRectsBinPack specific code
+        bin.Init(m_bin_width, m_bin_height, allow_flip);
+        rbp::MaxRectsBinPack::FreeRectChoiceHeuristic _heuristic = rbp::MaxRectsBinPack::FreeRectChoiceHeuristic(heuristic); // <
+
+        m_bins += 1;
+        // set min size that doesnt fit
+        bin.max_height = m_bin_height + 1;
+        bin.max_width = m_bin_width + 1;
+
+        int pack_index = 0;
+        for (int i = 0; i < m_rects.size(); i++){
+
+            // if rectangle cannot fit at all within bin, pop it out
+            if (m_rects[i].height > m_bin_height || m_rects[i].width > m_bin_width || (!allow_flip &&(m_rects[i].width > m_bin_height || m_rects[i].height > m_bin_width))){
+                m_misfits.push_back({m_rects[i].width, m_rects[i].height});
+                py::print("Rectangle index", m_rects[i].index, "of size ", m_rects[i].width, m_rects[i].height, " does not fit in available space of", m_bin_width, m_bin_height );
+                m_rects.erase(m_rects.begin() + i);
+                i--;
+            } 
+
+            // handle skipping rectangles
+            if (m_rects[i].height < bin.max_height || m_rects[i].width < bin.max_width || m_rects[i].height < bin.max_width || m_rects[i].width < bin.max_height){
+
+                // > MaxRectsBinPack specific code
+                rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _heuristic, m_rects[i].index); // <
+
+                if (packedRect.height > 0){
+                    m_rects.erase(m_rects.begin() + i);
+                    i--;
+                }
+                else{
+                    // defer rectangle to next bin, update min size
+                    bin.max_height = std::min(bin.max_height, m_rects[i].height);
+                    bin.max_width = std::min(bin.max_width, m_rects[i].width);
+                }
+            }
+        }
+        // append last bin
+        if (m_rects.size() == 0){
+            Bins.push_back(bin);
+        }
     }
 }
 
+/////
+// 
+// main
+//
 py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, int heuristic, int split_method, bool verbose){
     /* wrapper to all BinPack Methods*/
 
@@ -72,69 +155,49 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
     bool _merge = true;         // GuillotineBinPack
     bool _allow_flip = true;    // MaxRectsBinPack
 
+    m_verbose = verbose;
+
     Bins.clear();
     get_rectangles(arr);
     approximate_bin_size(overflow);
 
-   //m_numrect = 0;
-    std::string heuristic_name;
+    m_misfits.clear();
 
-    std::vector<std::vector<int>> misfits;
-    misfits.clear();
+    if (method != 0 && m_fixedbin){
+        py::print("*******************");
+        py::print("WARNING: Only MaxRectsBinPack (method 0) has multiple fixed size bins implemented");
+        py::print("... Results will be incomplete, only one bin of fixed size will be packed.");
+        py::print("*******************");
+    }
 
     switch (method){
         case(0):{ //MaxRectsBinPack
-
+        
             rbp::MaxRectsBinPack bin;
-            if (heuristic >= bin.enum_name.size()){
-                py::print("heuristic allowable range: 0-", bin.enum_name.size()-1, ":", bin.enum_name);
-                py::array_t<int> binned(0);
-                return binned;
-            }
-            if (verbose)
+            if (m_verbose)
                 py::print("chosen method: MaxRectsBinPack, heuristic:", bin.enum_name[heuristic]);
 
-
-            bin.Init(m_bin_width, m_bin_height, _allow_flip);
-            rbp::MaxRectsBinPack::FreeRectChoiceHeuristic _heuristic = rbp::MaxRectsBinPack::FreeRectChoiceHeuristic(heuristic);
-            heuristic_name = bin.enum_name[int(heuristic)];
-            
-            for (int i = 0; i < m_rects.size(); i++){
-                rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _heuristic, i);
-                if (packedRect.height <= 0)
-                    misfits.push_back({m_rects[i].width, m_rects[i].height});
-            }
-            
-            Bins.push_back(bin);
+            fill_bin(bin, heuristic, _allow_flip);
             break;
         }
         case(1):{ //GuillotineBinPack
 
             rbp::GuillotineBinPack bin;
-            if (heuristic >= bin.enum_name.size()){
-                py::print("heuristic allowable range: 0-", bin.enum_name.size()-1, ":", bin.enum_name);
-                py::array_t<int> binned(0);
-                return binned;
-            }
-            if (split_method >= bin.enum_split_name.size()){
-                py::print("split method allowable range: 0-", bin.enum_split_name.size()-1, ":", bin.enum_split_name);
-                py::array_t<int> binned(0);
-                return binned;
-            }
+            assert(check_enum(rbp::GuillotineBinPack::enum_name, heuristic));
+            assert(check_enum(rbp::GuillotineBinPack::enum_split_name, split_method));
 
-            if (verbose){
+            if (m_verbose)
                 py::print("chosen method: GuillotineBinPack, heuristic:", bin.enum_name[heuristic], ", split method:", bin.enum_split_name[split_method]);
-            }
+            
             bin.Init(m_bin_width, m_bin_height);
   
             rbp::GuillotineBinPack::FreeRectChoiceHeuristic _heuristic = rbp::GuillotineBinPack::FreeRectChoiceHeuristic(heuristic);
             rbp::GuillotineBinPack::GuillotineSplitHeuristic _split = rbp::GuillotineBinPack::GuillotineSplitHeuristic(split_method);
-            heuristic_name = bin.enum_name[heuristic] + " "+bin.enum_split_name[split_method];
 
             for (int i = 0; i < m_rects.size(); i++){
                 rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _merge, _heuristic, _split, i);
                 if (packedRect.height <= 0)
-                    misfits.push_back({m_rects[i].width, m_rects[i].height});
+                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
             }
             Bins.push_back(bin);
             break;
@@ -142,23 +205,19 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
         case(2):{ //ShelfBinPack
 
             rbp::ShelfBinPack bin;
-            if (heuristic >= bin.enum_name.size()){
-                py::print("heuristic allowable range: 0-", bin.enum_name.size()-1, ":", bin.enum_name);
-                py::array_t<int> binned(0);
-                return binned;
-            }
-            if (verbose)
+            assert(check_enum(rbp::ShelfBinPack::enum_name, heuristic));
+        
+            if (m_verbose)
                 py::print("chosen method: ShelfBinPack, heuristic:", bin.enum_name[heuristic]);
 
             bin.Init(m_bin_width, m_bin_height, _useWasteMap);
 
             rbp::ShelfBinPack::ShelfChoiceHeuristic _heuristic = rbp::ShelfBinPack::ShelfChoiceHeuristic(heuristic);
-            heuristic_name = bin.enum_name[heuristic];
 
             for (int i = 0; i < m_rects.size(); i++){
                 rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _heuristic, i);
                 if (packedRect.height <= 0)
-                    misfits.push_back({m_rects[i].width, m_rects[i].height});
+                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
                 else
                     bin.usedRectangles.push_back(packedRect);
             }
@@ -169,7 +228,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
         case(3):{//ShelfNextFitBinPack
 
             rbp::ShelfNextFitBinPack bin;
-            if (verbose)
+            if (m_verbose)
                 py::print("chosen method: ShelfNextFitBinPack");
 
             bin.Init(m_bin_width, m_bin_height);
@@ -177,7 +236,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
             for (int i = 0; i < m_rects.size(); i++){
                 rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, i);
                 if (packedRect.height <= 0)
-                    misfits.push_back({m_rects[i].width, m_rects[i].height});
+                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
                 else
                     bin.usedRectangles.push_back(packedRect);
             }
@@ -187,23 +246,19 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
         case(4):{//SkylineBinPack
 
             rbp::SkylineBinPack bin;
-            if (heuristic >= bin.enum_name.size()){
-                py::print("heuristic allowable range: 0-", bin.enum_name.size()-1, ":", bin.enum_name);
-                py::array_t<int> binned(0);
-                return binned;
-            }
-            if (verbose)
+            assert(check_enum(rbp::SkylineBinPack::enum_name, heuristic));
+ 
+            if (m_verbose)
                 py::print("chosen method: SkylineBinPack, heuristic:", bin.enum_name[heuristic]);
 
             bin.Init(m_bin_width, m_bin_height, _useWasteMap);
 
             rbp::SkylineBinPack::LevelChoiceHeuristic _heuristic = rbp::SkylineBinPack::LevelChoiceHeuristic(heuristic);
-            heuristic_name = bin.enum_name[heuristic];
 
             for (int i = 0; i < m_rects.size(); i++){
                 rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _heuristic, i);
                 if (packedRect.height <= 0)
-                    misfits.push_back({m_rects[i].width, m_rects[i].height});
+                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
                 else
                     packedRect.index = i;
                     bin.usedRectangles.push_back(packedRect);
@@ -215,86 +270,44 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
             py::print("methods:, available range: 0-4");
         }
     }
-    if (misfits.size() > 0){
-        py::print("Number of rectangles that dont fit:", misfits.size());
+    if (m_misfits.size() > 0){
+        py::print("Number of rectangles that dont fit:", m_misfits.size());
     }
-    return pyout(verbose);
+    return pyout();
 
 }
+/////
+// 
+// return Binned data as flat numpy array
+//
+py::array_t<int> Binnit::pyout(){
 
-py::array_t<int> Binnit::pyout(bool verbose){
-    /*
-        converts bins, indices, used rectangles to numpy array
-        TODO: return as multidim array or dictionary
-    */
     int _num_rects = 0;
     for (int i = 0; i < Bins.size(); i++)
         _num_rects += Bins[i].usedRectangles.size();
 
-    py::array_t<int> binned(_num_rects*6);
+    if (m_verbose){
+        py::print("Number of Bins:\t", Bins.size());
+        py::print("Number of Rectangles:\t", _num_rects);
+    }
 
+    py::array_t<int> binned(_num_rects*6);
+    int k = 0;
     for (int i = 0; i < Bins.size(); i++)
     {
-        for (int j = 0; j < _num_rects; j++){ 
-
-            binned.mutable_at(j*6) = i;  //bin index
-            binned.mutable_at(j*6+1) = Bins[i].usedRectangles[j].index; //rectangle index
-            binned.mutable_at(j*6+2) =  Bins[i].usedRectangles[j].x;
-            binned.mutable_at(j*6+3) =  Bins[i].usedRectangles[j].y;
-            binned.mutable_at(j*6+4) =  Bins[i].usedRectangles[j].width;
-            binned.mutable_at(j*6+5) =  Bins[i].usedRectangles[j].height;
+        for (int j = 0; j < Bins[i].usedRectangles.size(); j++){
+            binned.mutable_at(k++) = i; 
+            binned.mutable_at(k++) = Bins[i].usedRectangles[j].index; 
+            binned.mutable_at(k++) =  Bins[i].usedRectangles[j].x;
+            binned.mutable_at(k++) =  Bins[i].usedRectangles[j].y;
+            binned.mutable_at(k++) =  Bins[i].usedRectangles[j].width;
+            binned.mutable_at(k++) =  Bins[i].usedRectangles[j].height;
         }
     }
     return binned;
 }
 
 
-/////
-// TODO Deprectate Binnit::Pack handles this and more
-///
-// py::array_t<int> Binnit::pack(py::array_t<int> arr, float overflow)
-// {
-//     //std::vector<rbp::MaxRectsBinPack> Bins;
-//     // TODO array of bins
-//     // TODO different bin packing types
-
-//     Bins.clear();
-
-//     get_rectangles(arr);
-//     approximate_bin_size(overflow);
-
-//     rbp::MaxRectsBinPack bin;
-
-// 	py::print("Initializing bin to ", m_bin_width, m_bin_height);
-// 	bin.Init(m_bin_width, m_bin_height);
-
-//     m_numrect = 0;
-
-//     for (int i = 0; i < m_rects.size(); i++){
-// 		rbp::MaxRectsBinPack::FreeRectChoiceHeuristic heuristic = rbp::MaxRectsBinPack::FreeRectChoiceHeuristic(0);
-//         rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, heuristic, i);
-
-//         // std::string heuristic_name = bin.enum_name[int(heuristic)];
-//         // py::print(int(heuristic), heuristic_name);
-
-//         /* Test success or failure. TODO: 
-//             if failure 
-//                 if fixed size bin: 
-//                     initialize new bin, record dims of rect that didnt fit,
-//                 else
-//                     enarge bin
-//         */
-// 		if (packedRect.height <= 0)
-//             py::print(" No room for rectangle [", i, "] of size [", m_rects[i].width, ",", m_rects[i].height, "]"); 
-//             //bin.Resize(width, height +x)
-//         else
-//             m_numrect += 1;
-// 	}
-
-//     Bins.push_back(bin);
-//     return pyout();
-
-// }
 
 ////
 // TODO either deprecate or make use of this
@@ -329,5 +342,16 @@ py::array_t<int> Binnit::pyout(bool verbose){
 //         py::print("arg 'method' has to be either one of ", structures, "(",0,"-", structures.size()-1, ")");
 //     }
 // }
+
+/*template <class T, typename... args>
+T Init(T height, )*/
+
+// template <class T>
+// T Init(int width, int height, bool b_arg){
+//     T bin;
+//     bin.Init(width, height, b_arg);
+//     return bin;
+// }
+
 
 

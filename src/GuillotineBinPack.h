@@ -7,6 +7,7 @@ changelist
 : enum name array for reporting
 : added index for reference
 
+adapted from:
 * @file GuillotineBinPack.h
 	@author Jukka Jyl�nki
 
@@ -17,6 +18,7 @@ changelist
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include "Rect.h"
 

@@ -21,10 +21,6 @@ PYBIND11_MODULE(pybinpack, m){
            mul
     )pbdoc";
 
-    // m.def("get_rects", &get_rects, "numpy 2d array to array of Rect.h");
-    // m.def("get_vec", &get_vec, "numpy 2d array to vector 2d array");
-    // m.def("simple_pack", &simple_pack, "executes bin packing", py::arg("arr"), py::arg("binWidth")=16384, py::arg("binHeight")=8192);
-
     py::class_<Binnit>binnit(m, "Binnit");
 
     binnit.def(py::init<const int &, const int &>(),  py::arg("width")=0,  py::arg("height")=0 )
@@ -33,9 +29,7 @@ PYBIND11_MODULE(pybinpack, m){
     /*
         .def("SetMethod", py::overload_cast<enum Binnit::Method> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
         .def("SetMethod", py::overload_cast<int> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
-        .def("SetMethod", py::overload_cast<const string&> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
-        .def("pack", &Binnit::pack, "executes bin packing", py::arg("arr"), py::arg("overflow")=1.1 )
-
+        .def("SetMethod", py::overload_cast<const string&> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" );
 
     py::enum_<Binnit::Method>(binnit, "Method")
         .value("MaxRects", Binnit::Method::MaxRects)
@@ -44,11 +38,6 @@ PYBIND11_MODULE(pybinpack, m){
         .value("ShelfNextFit", Binnit::Method::ShelfNextFit)
         .value("Skyline", Binnit::Method::Skyline);
         */
-        
 
-#ifdef VERSION_INFO
-    m.attr("__version__") = VERSION_INFO;
-#else
-    m.attr("__version__") = "dev";
-#endif
+    m.attr("__version__") = "0.0.4";
 }
