@@ -30,7 +30,8 @@ class Binnit{
 
         std::vector<rbp::BinPack> Bins;
 
-        py::array_t<int> Pack(py::array_t<int> arr, int method=0, float overflow=1.1, int heuristic=0, int split_method=0, bool verbose=false);
+        py::array_t<int> Pack(py::array_t<int> arr, int method=0, float overflow=1.1, int heuristic=0, 
+                              int split_method=0, bool allow_flip=true, bool verbose=false);
 
     private:
 

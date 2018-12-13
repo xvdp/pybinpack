@@ -147,13 +147,12 @@ void Binnit::fill_bin(rbp::MaxRectsBinPack& bin, int heuristic, bool allow_flip)
 // 
 // main
 //
-py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, int heuristic, int split_method, bool verbose){
+py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, int heuristic, int split_method, bool allow_flip, bool verbose){
     /* wrapper to all BinPack Methods*/
 
     //TODO expose
     bool _useWasteMap = true;   // ShelfBinPack, Skyline
     bool _merge = true;         // GuillotineBinPack
-    bool _allow_flip = true;    // MaxRectsBinPack
 
     m_verbose = verbose;
 
@@ -177,7 +176,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
             if (m_verbose)
                 py::print("chosen method: MaxRectsBinPack, heuristic:", bin.enum_name[heuristic]);
 
-            fill_bin(bin, heuristic, _allow_flip);
+            fill_bin(bin, heuristic, allow_flip);
             break;
         }
         case(1):{ //GuillotineBinPack

@@ -24,8 +24,9 @@ PYBIND11_MODULE(pybinpack, m){
     py::class_<Binnit>binnit(m, "Binnit");
 
     binnit.def(py::init<const int &, const int &>(),  py::arg("width")=0,  py::arg("height")=0 )
+
         .def("Pack", &Binnit::Pack, "Bin Packing", py::arg("arr"), py::arg("method")=0, py::arg("overflow")=1.1,
-             py::arg("heuristic")=0, py::arg("split_method")=0, py::arg("verbose")=false );
+             py::arg("heuristic")=0, py::arg("split_method")=0, py::arg("allow_flip")=true, py::arg("verbose")=false );
     /*
         .def("SetMethod", py::overload_cast<enum Binnit::Method> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
         .def("SetMethod", py::overload_cast<int> (&Binnit::SetMethod), "Specifies between the various methods for binpacking available" )
@@ -39,5 +40,5 @@ PYBIND11_MODULE(pybinpack, m){
         .value("Skyline", Binnit::Method::Skyline);
         */
 
-    m.attr("__version__") = "0.0.4";
+    m.attr("__version__") = "0.0.4.1";
 }
