@@ -6,7 +6,6 @@ xvdp 2018
 #include <string>
 #include <vector>
 #include <math.h>
-#include <boost/algorithm/string.hpp>    
 #include "BinPackManager.h"
 
 using namespace std;
@@ -317,6 +316,7 @@ py::array_t<int> Binnit::pyout(){
 ////
 // TODO either deprecate or make use of this
 //
+//#include <boost/algorithm/string.hpp> 
 
 // void Binnit::SetMethod(int method){
 //     assert(5 > method > -1);
