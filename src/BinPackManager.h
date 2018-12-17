@@ -30,6 +30,10 @@ class Binnit{
 
         std::vector<rbp::BinPack> Bins;
 
+        int m_bins = 0;         // number of bins
+        int m_bin_width = 0;    // width of bins
+        int m_bin_height = 0;   // height of bins
+
         py::array_t<int> Pack(py::array_t<int> arr, int method=0, float overflow=1.1, int heuristic=0, 
                               int split_method=0, bool allow_flip=true, bool verbose=false);
 
@@ -41,9 +45,6 @@ class Binnit{
 
         int m_area;             //total rectangles area
 
-        int m_bins = 0;         // number of bins
-        int m_bin_width = 0;    // width of bins
-        int m_bin_height = 0;   // height of bins
         std::vector<std::vector<int>> m_misfits; //rectangles that do not fit in given bins
 
         int m_minimum_logical_bin = 10e4; // if smaller than 100x100 binnning doesnt make much sense

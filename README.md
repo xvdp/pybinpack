@@ -44,7 +44,9 @@ jupyter has to be installed manually, it threw some errors for me.
     * On conda, when making code modifications, sometimes the build goes toconda root environment instead of current environment; 
     not sure why.
     To fix that problem manually uninstall from conda root with `pip uninstall pybinpack` then run ./install.sh again.
-    * conda install doesn't really work with current setup-haven't dug up why, thats why I pip install. 
+    * conda install doesn't really work with current setup-haven't dug up why, thats why I pip install.
+
+    * bin.width and bin.height are reversed
 
  3. example
 
