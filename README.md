@@ -50,4 +50,4 @@ jupyter has to be installed manually, it threw some errors for me.
 
  3. example
 
-    https://github.com/xvdp/pybinpack/examples/BinPackExample.ipynb
+    https://github.com/xvdp/pybinpack/blob/master/examples/BinPackExample.ipynb
