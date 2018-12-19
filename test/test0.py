@@ -17,8 +17,8 @@ class Colors:
 try:
     import pybinpack as pb
 except:
-    print(Colors.RB,"compile failed!? pybinpack not found", Colors.AU)
-    raise 
+    print(Colors.RB, "compile failed!? pybinpack not found", Colors.AU)
+    raise
 
 
 def check_version():
@@ -34,9 +34,14 @@ def check_version():
     print(pf)
     print('--------------\n')
 
-def print_test(res):
+def print_test(res, ar, b, include_rotation=False):
     if len(res):
-        print("output: array of [Bin, index, x, y, width, height ]:\n", res)
+        msg = "output: array of [Bin, index,"
+        if include_rotation:
+            msg+=" rotation,"
+        msg += " x, y, width, height]:\n"
+        print(msg, res)
+        print(" Input rects:", len(ar), "returns:", res.shape, "values; binsize:", b.height, b.width, "; nb bins:", b.bins)
         print(Colors.GB, "\tTest Success", Colors.AU)
     else:
         print(Colors.RB, "\tTest Fail", Colors.AU)
@@ -50,20 +55,26 @@ def run_test():
     print(Colors.YB, " Testing pybinpack: ", Colors.AU)
     print('input: array of [[width, height]]', ar)
 
-    print(Colors.YB, " Test 1: ", Colors.AU)
+    print(Colors.YB, " Test 1: Binnit.Pack MaxRects, single bin", Colors.AU)
     b = pb.Binnit(0,0)
     out = b.Pack(ar, method=0, heuristic=0, verbose=True)
-    print_test(out)
+    print_test(out, ar, b, True)
 
-    print(Colors.YB, "\n Test 2: ", Colors.AU)
+    print(Colors.YB, "\n Test 2: Binnit.Pack Guillotine, single bin", Colors.AU)
     b = pb.Binnit(0,0)
     out = b.Pack(ar, method=1, heuristic=0, verbose=True)
-    print_test(out)
+    print_test(out, ar, b, True)
 
-    print(Colors.YB, "\n Test 3: ", Colors.AU)
+    print(Colors.YB, "\n Test 3: Binnit.Pack MaxRects fixed size multiplebins", Colors.AU)
     b = pb.Binnit(500, 500)
     out = b.Pack(ar, method=0, heuristic=0, verbose=True)
-    print_test(out)
+    print_test(out, ar, b, True)
+
+    print(Colors.YB, "\n Test 4: Binnit.DataSet ", Colors.AU)
+    b = pb.Binnit(500, 500)
+    out = b.DataSet(ar, verbose=True)
+    print_test(out, ar, b, False)
+
 
 if __name__ == "__main__": 
     run_test()

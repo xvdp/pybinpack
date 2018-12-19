@@ -141,7 +141,23 @@ void Binnit::fill_bin(rbp::MaxRectsBinPack& bin, int heuristic, bool allow_flip)
         }
     }
 }
+/////
+//
+// simpler method, maxrectsbinpack, no flipping allowed, returns, array size 6, num rects
+//
+py::array_t<int> Binnit::DataSet(py::array_t<int> arr, bool verbose)
+{   
 
+    m_verbose = verbose;
+    Bins.clear();
+    get_rectangles(arr);
+    assert (m_bin_height * m_bin_width >= m_minimum_logical_bin);
+
+    rbp::MaxRectsBinPack bin;
+    fill_bin(bin, 0, false); // MaxRectsBinPack, no rotation
+
+    return pyout(false); //include_rotation false: resulting array: (6, num_rect)
+}
 /////
 // 
 // main
@@ -187,6 +203,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
             if (m_verbose)
                 py::print("chosen method: GuillotineBinPack, heuristic:", bin.enum_name[heuristic], ", split method:", bin.enum_split_name[split_method]);
             
+            m_bins = 1; // only single bin algo implemented
             bin.Init(m_bin_width, m_bin_height);
   
             rbp::GuillotineBinPack::FreeRectChoiceHeuristic _heuristic = rbp::GuillotineBinPack::FreeRectChoiceHeuristic(heuristic);
@@ -208,6 +225,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
             if (m_verbose)
                 py::print("chosen method: ShelfBinPack, heuristic:", bin.enum_name[heuristic]);
 
+            m_bins = 1; // only single bin algo implemented
             bin.Init(m_bin_width, m_bin_height, _useWasteMap);
 
             rbp::ShelfBinPack::ShelfChoiceHeuristic _heuristic = rbp::ShelfBinPack::ShelfChoiceHeuristic(heuristic);
@@ -229,6 +247,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
             if (m_verbose)
                 py::print("chosen method: ShelfNextFitBinPack");
 
+            m_bins = 1; // only single bin algo implemented
             bin.Init(m_bin_width, m_bin_height);
 
             for (int i = 0; i < m_rects.size(); i++){
@@ -249,6 +268,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
             if (m_verbose)
                 py::print("chosen method: SkylineBinPack, heuristic:", bin.enum_name[heuristic]);
 
+            m_bins = 1; // only single bin algo implemented
             bin.Init(m_bin_width, m_bin_height, _useWasteMap);
 
             rbp::SkylineBinPack::LevelChoiceHeuristic _heuristic = rbp::SkylineBinPack::LevelChoiceHeuristic(heuristic);
@@ -283,7 +303,7 @@ py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, 
 //  [3,4] : position
 //  [5,6] : area
 //
-py::array_t<int> Binnit::pyout(){
+py::array_t<int> Binnit::pyout(bool include_rotation){
 
     int _num_rects = 0;
     for (int i = 0; i < Bins.size(); i++)
@@ -294,14 +314,15 @@ py::array_t<int> Binnit::pyout(){
         py::print("Number of Rectangles:\t", _num_rects);
     }
 
-    py::array_t<int> binned(_num_rects * 7);
+    py::array_t<int> binned(_num_rects * (6 + int(include_rotation)));
     int k = 0;
     for (int i = 0; i < Bins.size(); i++)
     {
         for (int j = 0; j < Bins[i].usedRectangles.size(); j++){
             binned.mutable_at(k++) = i;
             binned.mutable_at(k++) = Bins[i].usedRectangles[j].index;
-            binned.mutable_at(k++) = int(Bins[i].usedRectangles[j].flipped);
+            if (include_rotation)
+                binned.mutable_at(k++) = int(Bins[i].usedRectangles[j].flipped);
             binned.mutable_at(k++) =  Bins[i].usedRectangles[j].x;
             binned.mutable_at(k++) =  Bins[i].usedRectangles[j].y;
             binned.mutable_at(k++) =  Bins[i].usedRectangles[j].width;

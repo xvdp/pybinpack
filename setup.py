@@ -64,10 +64,15 @@ class CMakeBuild(build_ext):
 
 def readversion():
     with open('src/main.cpp', 'r') as _fi:
-        return _fi.read().split('version__"')[1].split('"')[1]
+        version = _fi.read().split('version__"')[1].split('"')[1]
+
+    with open('pybinpack/version.py', 'w') as _fi:
+        _fi.write("version='"+version+"'")
+    
+    return version
 
 
-setup(
+SETUP_ARGS = dict(
     name='pybinpack',
     version=readversion(),
     author='xvdp',
@@ -75,8 +80,18 @@ setup(
     description='rectangle binpack with pybind11',
     long_description='',
     install_requires=['numpy', 'pillow'],
-    ext_modules=[CMakeExtension('pybinpack')],
+    ext_modules=[CMakeExtension('pybinpack._pybinpack')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
+    packages=['pybinpack']
 )
-# has to be manually installed; 'jupyter', 
+
+try:
+    setup(**SETUP_ARGS)
+except subprocess.CalledProcessError:
+    print('Failed to build extension!')
+    del SETUP_ARGS['ext_modules']
+    setup(**SETUP_ARGS)
+
+
+# has to be manually installed; 'jupyter', matplotlib, scipy

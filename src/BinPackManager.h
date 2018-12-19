@@ -34,8 +34,19 @@ class Binnit{
         int m_bin_width = 0;    // width of bins
         int m_bin_height = 0;   // height of bins
 
+        ///
+        // Wrapper to all binpack methods in this project. 
+        // Returns array size (num_rects, 7): 
+        // bin_index, rect_index, rotation, posx, posy, width, height
         py::array_t<int> Pack(py::array_t<int> arr, int method=0, float overflow=1.1, int heuristic=0, 
                               int split_method=0, bool allow_flip=true, bool verbose=false);
+
+        ///
+        // DatasetBinpack: subset intended to binpack large image datasets
+        // MaxRectBinPack, allow_flip=false, fixed bin size. Returns array size (num_rects, 6)
+        // Returns array size (num_rects, 6): 
+        // bin_index, rect_index, posx, posy, width, height
+        py::array_t<int> DataSet(py::array_t<int> arr, bool verbose=false);
 
     private:
 
@@ -53,7 +64,7 @@ class Binnit{
         // input from python: gets list or numpy array and writes is as m_rects
         void get_rectangles(py::array_t<int> arr);
         // output to python
-        py::array_t<int> pyout();
+        py::array_t<int> pyout(bool include_rotation=true);
     
         // if bin_width * bin_height <= minimum_logical_bin: single bin estimated size
         void approximate_bin_size(float overflow=1.1); //estimate size of bin
