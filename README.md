@@ -50,11 +50,4 @@ jupyter has to be installed manually, it threw some errors for me.
 
  3. example
 
-    examples/BinPackExample.ipynb included
-
-    Some of the example images from ipython
-
-![Max Rects Bin Pack area overflow 1](https://github.com/xvdp/pybinpack/examples/0_MRBP_h0_b1_o1.png)
-![Max Rects Bin Pack fixed size](https://github.com/xvdp/pybinpack/examples/3_MRBP_h0_b11.png)
-![Max Rects Bin Pack show rectangles](https://github.com/xvdp/pybinpack/examples/4_MRBP_h1_b1_o105.png)
-![Guillotine Bin Pack](https://github.com/xvdp/pybinpack/examples/9_GBP_h0_b1_o177.png)
+    https://github.com/xvdp/pybinpack/examples/BinPackExample.ipynb
