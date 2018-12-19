@@ -1,6 +1,7 @@
 pybinpack
 =========
 @xvdp 2018
+![Max Rects BinPack single bin](https://github.com/xvdp/pybinpack/blob/master/examples/0_MRBP_h0_b1_o1.png)
 
 * Rectangle Bin packer using pybind11
 * Required Python > 3.4, GCC
@@ -33,7 +34,7 @@ Required packages: numpy, jupyter, matplotlib and pybind. None of them have to b
 jupyter has to be installed manually, it threw some errors for me.
 
 
-2. build
+2. Build
     ```
     $ cd pybinpack
     $ ./install.sh # this will run python setup.py install and run quick test. 
@@ -48,6 +49,15 @@ jupyter has to be installed manually, it threw some errors for me.
 
     * bin.width and bin.height are reversed
 
- 3. example
-
+ 3. Examples
     https://github.com/xvdp/pybinpack/blob/master/examples/BinPackExample.ipynb
+    Some Images from notebook:
+Multiple same size bins  
+![Image](https://github.com/xvdp/pybinpack/blob/master/examples/3_MRBP_h0_b11.png)
+Single Bin, only rectangles shown
+![Image](https://github.com/xvdp/pybinpack/blob/master/examples/4_MRBP_h1_b1_o105.png)
+ Some algorithms are not very efficient
+![Image](https://github.com/xvdp/pybinpack/blob/master/examples/9_GBP_h0_b1_o177.png)
+    
+    
+    
