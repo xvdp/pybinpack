@@ -79,7 +79,7 @@ SETUP_ARGS = dict(
     author_email='xvdpahlen@gmail.com',
     description='rectangle binpack with pybind11',
     long_description='',
-    install_requires=['numpy', 'pillow'],
+    install_requires=['numpy', 'pillow', 'scipy', 'matplotlib'],
     ext_modules=[CMakeExtension('pybinpack._pybinpack')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
