@@ -12,11 +12,11 @@ using namespace std;
 namespace py = pybind11;
 
 
-PYBIND11_MODULE(_pybinpack, m){
+PYBIND11_MODULE(pybinpack, m){
     m.doc() = R"pbdoc(
         pybinpack
         ---------
-        .. currentmodule:: _pybinpack
+        .. currentmodule:: pybinpack
         .. autosummary:: 
            :toctree: _generate
 

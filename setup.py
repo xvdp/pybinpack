@@ -66,9 +66,6 @@ def readversion():
     with open('src/main.cpp', 'r') as _fi:
         version = _fi.read().split('version__"')[1].split('"')[1]
 
-    with open('pybinpack/version.py', 'w') as _fi:
-        _fi.write("version='"+version+"'")
-    
     return version
 
 
@@ -79,11 +76,10 @@ SETUP_ARGS = dict(
     author_email='xvdpahlen@gmail.com',
     description='rectangle binpack with pybind11',
     long_description='',
-    install_requires=['numpy', 'pillow', 'scipy', 'matplotlib'],
-    ext_modules=[CMakeExtension('pybinpack._pybinpack')],
+    install_requires=['numpy'],
+    ext_modules=[CMakeExtension('pybinpack')],
     cmdclass=dict(build_ext=CMakeBuild),
-    zip_safe=False,
-    packages=['pybinpack']
+    zip_safe=False
 )
 
 try:
@@ -93,5 +89,3 @@ except subprocess.CalledProcessError:
     del SETUP_ARGS['ext_modules']
     setup(**SETUP_ARGS)
 
-
-# has to be manually installed; 'jupyter', matplotlib, scipy

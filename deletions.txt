@@ -1,0 +1,28 @@
+
+
+Removed 
+__init__.py
+version.py
+utils.py
+	def readversion()
+	def pack_to_canvas(pack)
+	def greyscale(img)
+	def fix_channels(img, channels)
+	def build_canvas(canvas_size, canvas_data, file_list, channels=3, scale=1.0)
+	def display_binned(canvases, binsize, file_list=[], figwidth=20, max_cols=2,
+		           noimages=False, max_show_group=20, samples=None, scale=1.0, max_bins=None, verbose=False):
+
+
+setup.py
+	changed readversion
+	removed 	packages=['pybinpack']
+	renamed pybinpack._pybinpack -> pybinpack
+	removed 	install_requires=['pillow', 'scipy', 'matplotlib'],
+	
+
+CMakeLists.txt
+	renamed all _pybinpack to pybinpack
+
+src/main.cpp
+	renamed all _pybinpack to pybinpack
+
