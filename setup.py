@@ -92,6 +92,3 @@ except subprocess.CalledProcessError:
     print('Failed to build extension!')
     del SETUP_ARGS['ext_modules']
     setup(**SETUP_ARGS)
-
-
-# has to be manually installed; 'jupyter', matplotlib, scipy

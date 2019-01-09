@@ -145,7 +145,7 @@ void Binnit::fill_bin(rbp::MaxRectsBinPack& bin, int heuristic, bool allow_flip)
 //
 // simpler method, maxrectsbinpack, no flipping allowed, returns, array size 6, num rects
 //
-py::array_t<int> Binnit::DataSet(py::array_t<int> arr, bool verbose)
+py::array_t<int> Binnit::pack(py::array_t<int> arr, bool verbose)
 {   
 
     m_verbose = verbose;

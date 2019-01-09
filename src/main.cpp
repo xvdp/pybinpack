@@ -74,7 +74,7 @@ PYBIND11_MODULE(_pybinpack, m){
         py::arg("arr"), py::arg("method")=0, py::arg("overflow")=1.1,
              py::arg("heuristic")=0, py::arg("split_method")=0, py::arg("allow_flip")=true, py::arg("verbose")=false )
 
-        .def("DataSet", &Binnit::DataSet, R"pbdoc(Bin Packing simplified; 
+        .def("pack", &Binnit::pack, R"pbdoc(Bin Packing simplified; 
         Returns a flat int array of size: 6*num rectangles, with info
             0: bin index
             1: image index
@@ -89,7 +89,7 @@ PYBIND11_MODULE(_pybinpack, m){
             Example
             >>> import pybinpack as pb
             >>> b = pb.Binnit(8640, 15360) # init bin of size 16K - 
-            >>> pack = b.Dataset(size_arr, verbose=True)
+            >>> pack = b.pack(size_arr, verbose=True)
             >>> print(b.bins, b.width, b.height)
 
         )pbdoc",
@@ -124,5 +124,5 @@ PYBIND11_MODULE(_pybinpack, m){
         )pbdoc");
         */
 
-    m.attr("__version__") = "0.0.5";
+    m.attr("__version__") = "0.0.6";
 }

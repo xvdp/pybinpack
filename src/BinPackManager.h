@@ -42,11 +42,11 @@ class Binnit{
                               int split_method=0, bool allow_flip=true, bool verbose=false);
 
         ///
-        // DatasetBinpack: subset intended to binpack large image datasets
+        // DatasetBinpack: subset intended to binpack large image datasets, 
         // MaxRectBinPack, allow_flip=false, fixed bin size. Returns array size (num_rects, 6)
         // Returns array size (num_rects, 6): 
         // bin_index, rect_index, posx, posy, width, height
-        py::array_t<int> DataSet(py::array_t<int> arr, bool verbose=false);
+        py::array_t<int> pack(py::array_t<int> arr, bool verbose=false);
 
     private:
 
