@@ -2,7 +2,7 @@
 rectangle bin packer
 xvdp 2018 
 
-pybind11 bindings BinPacking algorithms
+pybind11 bindings BinPacking
 */
 
 #include <pybind11/pybind11.h>
@@ -52,5 +52,5 @@ PYBIND11_MODULE(pybinpack, m){
         .def_readonly("height", &Binnit::m_bin_height, "height of the bins; flipped! actually width");
 
 
-    m.attr("__version__") = "0.0.5";
+    m.attr("__version__") = "0.0.6.cpp";
 }
