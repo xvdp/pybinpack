@@ -145,7 +145,7 @@ void Binnit::fill_bin(rbp::MaxRectsBinPack& bin, int heuristic, bool allow_flip)
 //
 // simpler method, maxrectsbinpack, no flipping allowed, returns, array size 6, num rects
 //
-py::array_t<int> Binnit::DataSet(py::array_t<int> arr, bool verbose)
+py::array_t<int> Binnit::pack(py::array_t<int> arr, bool verbose)
 {   
 
     m_verbose = verbose;
@@ -158,142 +158,7 @@ py::array_t<int> Binnit::DataSet(py::array_t<int> arr, bool verbose)
 
     return pyout(false); //include_rotation false: resulting array: (6, num_rect)
 }
-/////
-// 
-// main
-//
-py::array_t<int> Binnit::Pack(py::array_t<int> arr, int method, float overflow, int heuristic, int split_method, bool allow_flip, bool verbose){
-    /* wrapper to all BinPack Methods*/
 
-    //TODO expose
-    bool _useWasteMap = true;   // ShelfBinPack, Skyline
-    bool _merge = true;         // GuillotineBinPack
-
-    m_verbose = verbose;
-
-    Bins.clear();
-    get_rectangles(arr);
-    approximate_bin_size(overflow);
-
-    m_misfits.clear();
-
-    if (method != 0 && m_fixedbin){
-        py::print("*******************");
-        py::print("WARNING: Only MaxRectsBinPack (method 0) has multiple fixed size bins implemented");
-        py::print("... Results will be incomplete, only one bin of fixed size will be packed.");
-        py::print("*******************");
-    }
-
-    switch (method){
-        case(0):{ //MaxRectsBinPack
-        
-            rbp::MaxRectsBinPack bin;
-            if (m_verbose)
-                py::print("chosen method: MaxRectsBinPack, heuristic:", bin.enum_name[heuristic]);
-
-            fill_bin(bin, heuristic, allow_flip);
-            break;
-        }
-        case(1):{ //GuillotineBinPack
-
-            rbp::GuillotineBinPack bin;
-            assert(check_enum(rbp::GuillotineBinPack::enum_name, heuristic));
-            assert(check_enum(rbp::GuillotineBinPack::enum_split_name, split_method));
-
-            if (m_verbose)
-                py::print("chosen method: GuillotineBinPack, heuristic:", bin.enum_name[heuristic], ", split method:", bin.enum_split_name[split_method]);
-            
-            m_bins = 1; // only single bin algo implemented
-            bin.Init(m_bin_width, m_bin_height);
-  
-            rbp::GuillotineBinPack::FreeRectChoiceHeuristic _heuristic = rbp::GuillotineBinPack::FreeRectChoiceHeuristic(heuristic);
-            rbp::GuillotineBinPack::GuillotineSplitHeuristic _split = rbp::GuillotineBinPack::GuillotineSplitHeuristic(split_method);
-
-            for (int i = 0; i < m_rects.size(); i++){
-                rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _merge, _heuristic, _split, i);
-                if (packedRect.height <= 0)
-                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
-            }
-            Bins.push_back(bin);
-            break;
-        }
-        case(2):{ //ShelfBinPack
-
-            rbp::ShelfBinPack bin;
-            assert(check_enum(rbp::ShelfBinPack::enum_name, heuristic));
-        
-            if (m_verbose)
-                py::print("chosen method: ShelfBinPack, heuristic:", bin.enum_name[heuristic]);
-
-            m_bins = 1; // only single bin algo implemented
-            bin.Init(m_bin_width, m_bin_height, _useWasteMap);
-
-            rbp::ShelfBinPack::ShelfChoiceHeuristic _heuristic = rbp::ShelfBinPack::ShelfChoiceHeuristic(heuristic);
-
-            for (int i = 0; i < m_rects.size(); i++){
-                rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _heuristic, i);
-                if (packedRect.height <= 0)
-                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
-                else
-                    bin.usedRectangles.push_back(packedRect);
-            }
-
-            Bins.push_back(bin);
-            break;
-        }
-        case(3):{//ShelfNextFitBinPack
-
-            rbp::ShelfNextFitBinPack bin;
-            if (m_verbose)
-                py::print("chosen method: ShelfNextFitBinPack");
-
-            m_bins = 1; // only single bin algo implemented
-            bin.Init(m_bin_width, m_bin_height);
-
-            for (int i = 0; i < m_rects.size(); i++){
-                rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, i);
-                if (packedRect.height <= 0)
-                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
-                else
-                    bin.usedRectangles.push_back(packedRect);
-            }
-            Bins.push_back(bin);
-            break;
-        }
-        case(4):{//SkylineBinPack
-
-            rbp::SkylineBinPack bin;
-            assert(check_enum(rbp::SkylineBinPack::enum_name, heuristic));
- 
-            if (m_verbose)
-                py::print("chosen method: SkylineBinPack, heuristic:", bin.enum_name[heuristic]);
-
-            m_bins = 1; // only single bin algo implemented
-            bin.Init(m_bin_width, m_bin_height, _useWasteMap);
-
-            rbp::SkylineBinPack::LevelChoiceHeuristic _heuristic = rbp::SkylineBinPack::LevelChoiceHeuristic(heuristic);
-
-            for (int i = 0; i < m_rects.size(); i++){
-                rbp::Rect packedRect = bin.Insert(m_rects[i].width, m_rects[i].height, _heuristic, i);
-                if (packedRect.height <= 0)
-                    m_misfits.push_back({m_rects[i].width, m_rects[i].height});
-                else
-                    packedRect.index = i;
-                    bin.usedRectangles.push_back(packedRect);
-            }
-            Bins.push_back(bin);
-            break;
-        }
-        default:{
-            py::print("methods:, available range: 0-4");
-        }
-    }
-    if (m_misfits.size() > 0){
-        py::print("Number of rectangles that dont fit:", m_misfits.size());
-    }
-    return pyout();
-
-}
 /////
 // 
 // return Binned data as flat numpy array
@@ -331,7 +196,6 @@ py::array_t<int> Binnit::pyout(bool include_rotation){
     }
     return binned;
 }
-
 
 
 ////

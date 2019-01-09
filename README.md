@@ -14,21 +14,12 @@ Modifications by xvdp 2018
 * added rectangle indexing within bin (to address image fitting within bin packing)
 * added simple heuristics to determine minimum bin size for a dataset
 * for what looks like the more efficient method (MaxRectsBinPack) implemented multiple fix sized bins
-
-
-This project was built with the purpose of understanding:
-
-    a. how pybind11 works; It's great; starting from example project, includes, compiles and links almost flawlessly.
-
-    b. Test speed of binning vs python version of binpacker.
-        - Measured against all python version https://github.com/secnot/rectpack (on a 300 image dataset Hymenoptere).
-        Both projects are sequential, cpp RectangleBinPack computes ~ 10e5 faster than py rectpack.
-
-    c. because I dont like looking at all the empty area when looking at images and datasets
+* on this branch / removed inefficient methods
 
 1. Clone
     ```
     $ git clone https://gitlab.com/xkunglu/pybinpack --recursive
+    $ git checkout --track origin/cpp_only #this branch
     ```
 Required packages: numpy, jupyter, matplotlib and pybind. None of them have to be installed, this project will install and or build as required.
 jupyter has to be installed manually, it threw some errors for me.
@@ -50,14 +41,13 @@ jupyter has to be installed manually, it threw some errors for me.
     * bin.width and bin.height are reversed
 
  3. Examples
+ 
     https://github.com/xvdp/pybinpack/blob/master/examples/BinPackExample.ipynb
     Some Images from notebook:
 Multiple same size bins  
 ![Image](https://github.com/xvdp/pybinpack/blob/master/examples/3_MRBP_h0_b11.png)
 Single Bin, only rectangles shown
 ![Image](https://github.com/xvdp/pybinpack/blob/master/examples/4_MRBP_h1_b1_o105.png)
- Some algorithms are not very efficient
-![Image](https://github.com/xvdp/pybinpack/blob/master/examples/9_GBP_h0_b1_o177.png)
-    
+
     
     

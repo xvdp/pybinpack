@@ -55,24 +55,9 @@ def run_test():
     print(Colors.YB, " Testing pybinpack: ", Colors.AU)
     print('input: array of [[width, height]]', ar)
 
-    print(Colors.YB, " Test 1: Binnit.Pack MaxRects, single bin", Colors.AU)
-    b = pb.Binnit(0,0)
-    out = b.Pack(ar, method=0, heuristic=0, verbose=True)
-    print_test(out, ar, b, True)
-
-    print(Colors.YB, "\n Test 2: Binnit.Pack Guillotine, single bin", Colors.AU)
-    b = pb.Binnit(0,0)
-    out = b.Pack(ar, method=1, heuristic=0, verbose=True)
-    print_test(out, ar, b, True)
-
-    print(Colors.YB, "\n Test 3: Binnit.Pack MaxRects fixed size multiplebins", Colors.AU)
+    print(Colors.YB, "\n Test 4: Binnit.pack ", Colors.AU)
     b = pb.Binnit(500, 500)
-    out = b.Pack(ar, method=0, heuristic=0, verbose=True)
-    print_test(out, ar, b, True)
-
-    print(Colors.YB, "\n Test 4: Binnit.DataSet ", Colors.AU)
-    b = pb.Binnit(500, 500)
-    out = b.DataSet(ar, verbose=True)
+    out = b.pack(ar, verbose=True)
     print_test(out, ar, b, False)
 
 
